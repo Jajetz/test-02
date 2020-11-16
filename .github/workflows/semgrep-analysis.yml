@@ -35,7 +35,7 @@ jobs:
           # Deployment ID on semgrep app.
           # publishDeployment: ${{ secrets.SEMGREP_DEPLOYMENT_ID }}
           # Set to 1 if you want a semgrep.sarif file to be written with all semgrep findings.
-          # generateSarif: "1"
+          generateSarif: "1"
       # Upload SARIF file generated in previous step          
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v1
