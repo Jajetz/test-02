@@ -1,0 +1,44 @@
+name: security
+
+# Controls when the action will run. Triggers the workflow on push or pull request events but only for the master branch
+on:
+  # Run on pull requests. Returns the results introduced by the pull_request.
+  pull_request:
+    branches: [ "master", "main" ]
+  # Run on merges. Return all results.
+  push:
+    branches: [ "master", "main" ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # sast-semgrep job
+  sast-semgrep:
+    name: sast-semgrep-scan
+    runs-on: ubuntu-latest
+    # steps: represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # checkout action: checkout project source under $GITHUB_WORKSPACE
+      - name: checkout
+        uses: actions/checkout@v1
+      # semgrep action: run sast scan
+      - name: semgrep-action
+        # Scan code using project's configuration on https://semgrep.dev/manage
+        uses: returntocorp/semgrep-action@v1
+        # Set GITHUB_TOKEN to leave inline comments on your pull requests.
+        # env:
+        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Rules and patterns to search for with semgrep. p/python, p/flask, r/python.flask
+          config: r/python.flask
+          # Access token to post results to the semgrep app.
+          # publishToken: ${{ secrets.SEMGREP_APP_TOKEN }}
+          # Deployment ID on semgrep app.
+          # publishDeployment: ${{ secrets.SEMGREP_DEPLOYMENT_ID }}
+          # Set to 1 if you want a semgrep.sarif file to be written with all semgrep findings.
+          # generateSarif: "1"
+      # Upload SARIF file generated in previous step          
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: semgrep.sarif
+        if: always()
