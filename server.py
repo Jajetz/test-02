@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from flask import Flask, request, render_template
+import PyYAML
 
 app = Flask(__name__)
 
@@ -13,9 +14,10 @@ def index():
 
     parameter = request.values.get('parameter')
 
-    parameter = eval(parameter)
+    parameter1 = eval(parameter)
+    parameter2 = yaml.load(parameter)
 
-    res = render_template('index.html', parameter=parameter)
+    res = render_template('index.html', parameter=parameter1)
 
     return res
 
