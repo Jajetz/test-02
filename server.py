@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from flask import Flask, request, render_template
-import PyYAML
+import yaml
 
 app = Flask(__name__)
 
