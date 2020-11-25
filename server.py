@@ -2,6 +2,7 @@
 
 from flask import Flask, request, render_template
 import yaml
+import ruamel.yaml
 
 app = Flask(__name__)
 
@@ -16,6 +17,7 @@ def index():
 
     parameter1 = eval(parameter)
     parameter2 = yaml.load(parameter)
+    parameter3 = ruamel.yaml.load(parameter)
 
     res = render_template('index.html', parameter=parameter1)
 
