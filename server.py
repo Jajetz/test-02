@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from flask import Flask, request, render_template
+import pickle
 import yaml
 import ruamel.yaml
 
@@ -16,8 +17,9 @@ def index():
     parameter = request.values.get('parameter')
 
     parameter1 = eval(parameter)
-    parameter2 = yaml.load(parameter)
-    parameter3 = ruamel.yaml.load(parameter)
+    parameter2 = pickle.loads(parameter)
+    parameter3 = yaml.load(parameter)
+    parameter4 = ruamel.yaml.load(parameter)
 
     res = render_template('index.html', parameter=parameter1)
 
