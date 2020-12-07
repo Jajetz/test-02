@@ -3,10 +3,11 @@ name: "security"
 on:
   # Run on pull requests. Returns the results introduced by the pull_request.
   pull_request:
-    branches: [ "main" ]
+    types: [ opened, synchronize, reopened ]
+    branches: [ main ]
   # Run on merges. Return all results.
   push:
-    branches: [ "main" ]
+    branches: [ main ]
   # Runs at 00:00 UTC on Sat
   schedule:
     - cron: '00 00 * * 6'
