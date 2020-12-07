@@ -75,8 +75,8 @@ jobs:
         # Scan code using project's configuration on https://semgrep.dev/manage
         uses: returntocorp/semgrep-action@v1
         # Set GITHUB_TOKEN to leave inline comments on your pull requests.
-        # env:
-        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           # Rules and patterns to search for with semgrep. p/python, p/flask, r/python.flask
           config: r/python.flask
@@ -93,3 +93,25 @@ jobs:
           sarif_file: semgrep.sarif
         if: always()
 
+
+  sast-sonarcloud:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        # Disabling shallow clone is recommended for improving relevancy of reporting
+        fetch-depth: 0
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+        args: >
+          -Dsonar.organization=jajetz
+          -Dsonar.projectKey=jajetz_test-02
+          -Dsonar.python.coverage.reportPaths=coverage.xml
+          -Dsonar.sources=lib/
+          -Dsonar.test.exclusions=tests/**
+          -Dsonar.tests=tests/
+          -Dsonar.verbose=true
