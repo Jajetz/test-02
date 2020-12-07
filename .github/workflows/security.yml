@@ -110,7 +110,5 @@ jobs:
         args: >
           -Dsonar.organization=jajetz
           -Dsonar.projectKey=jajetz_test-02
-          -Dsonar.python.coverage.reportPaths=coverage.xml
-          -Dsonar.sources=lib/
           -Dsonar.test.exclusions=tests/**
           -Dsonar.verbose=true
