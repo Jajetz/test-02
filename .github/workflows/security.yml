@@ -14,7 +14,7 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # sast-codeql job
+  # Static Application Security Testing (SAST) - CodeQL
   sast-codeql:
     name: sast-codeql
     runs-on: ubuntu-latest
@@ -61,7 +61,7 @@ jobs:
       uses: github/codeql-action/analyze@v1
 
 
-  # sast-semgrep job
+  # Static Application Security Testing (SAST) - semgrep
   sast-semgrep:
     name: sast-semgrep-scan
     runs-on: ubuntu-latest
@@ -93,7 +93,7 @@ jobs:
           sarif_file: semgrep.sarif
         if: always()
 
-
+  # Static Application Security Testing (SAST) - SonarCloud
   sast-sonarcloud:
     runs-on: ubuntu-latest
     steps:
@@ -112,3 +112,28 @@ jobs:
           -Dsonar.projectKey=jajetz_test-02
           -Dsonar.test.exclusions=tests/**
           -Dsonar.verbose=true
+
+  # Build
+  # Dynamic Application Security Testing (DAST) - OWASP ZAP
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 pytest
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Lint with flake8
+      run: |
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Test with pytest
+      run: |
+        pytest
