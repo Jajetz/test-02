@@ -97,31 +97,32 @@ jobs:
   # Static Application Security Testing (SAST) - semgrep
   sast-semgrep:
     name: sast-semgrep-scan
+    # If you are self-hosting, change the following `runs-on` value: 
     runs-on: ubuntu-latest
+
+    container:
+      # A Docker image with Semgrep installed. Do not change this.
+      image: returntocorp/semgrep
+
+    # Skip any PR created by dependabot to avoid permission issues:
+    if: (github.actor != 'dependabot[bot]')
+
     # steps: represent a sequence of tasks that will be executed as part of the job
     steps:
       # checkout action: checkout project source under $GITHUB_WORKSPACE
       - name: checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
       # semgrep action: run sast scan
-      - name: semgrep-action
-        # Scan code using project's configuration on https://semgrep.dev/manage
-        uses: returntocorp/semgrep-action@v1
-        # Set GITHUB_TOKEN to leave inline comments on your pull requests.
+      # Run the "semgrep ci" command on the command line of the docker image.
+      - run: semgrep ci --sarif --output=semgrep.sarif
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          # Rules and patterns to search for with semgrep. p/python, p/flask, r/python.flask
-          config: r/python.flask
-          # Access token to post results to the semgrep app.
-          # publishToken: ${{ secrets.SEMGREP_APP_TOKEN }}
-          # Deployment ID on semgrep app.
-          # publishDeployment: ${{ secrets.SEMGREP_DEPLOYMENT_ID }}
-          # Set to 1 if you want a semgrep.sarif file to be written with all semgrep findings.
-          generateSarif: "1"
-      # Upload SARIF file generated in previous step          
-      - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v1
+          # Connect to Semgrep Cloud Platform through your SEMGREP_APP_TOKEN.
+          # Generate a token from Semgrep Cloud Platform > Settings
+          # and add it to your GitHub secrets.
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+
+      - name: Upload SARIF file for GitHub Advanced Security Dashboard
+        uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: semgrep.sarif
         if: always()
